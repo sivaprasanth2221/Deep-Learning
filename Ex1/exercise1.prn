@@ -1,0 +1,292 @@
+1)
+
+import torch
+def inverse_2x2(matrix):
+    det = matrix[0,0] * matrix[1,1] - matrix[0,1] * matrix[1,0]
+    if det ==0:
+        raise ValueError("Matrix is not invertible")
+    inverse_det = 1.0/det
+    inverse_matrix = torch.tensor([[matrix[1,1],-matrix[0,1]],[-matrix[1,0],matrix[0,0]]])
+    inverse_matrix *= inverse_det
+    return inverse_matrix
+a = float(input("Enter a:"))
+b = float(input("Enter b:"))
+c = float(input("Enter c:"))
+d = float(input("Enter d:"))
+matrix_A = torch.tensor([[a,b],[c,d]])
+try:
+    inverse_A = inverse_2x2(matrix_A)
+    print("Original Matrix A:")
+    print(matrix_A)
+    print("\nInverse of Matrix A:")
+    print(inverse_A)
+except ValueError as e:
+    print("Error:",e)
+
+op:
+
+Original Matrix A:
+tensor([[1., 2.],
+        [3., 4.]])
+
+Inverse of Matrix A:
+tensor([[-2.0000,  1.0000],
+        [ 1.5000, -0.5000]])
+
+
+def mat_mul(mat_a,mat_b):
+    l = mat_a[0,0] * mat_b[0,0] + mat_a[0,1] * mat_b[1,0]
+    m = mat_a[0,0] * mat_b[0,1] + mat_a[0,1] * mat_b[1,1]
+    n = mat_a[1,0] * mat_b[0,0] + mat_a[1,1] * mat_b[1,0]
+    o = mat_a[1,0] * mat_b[0,1] + mat_a[1,1] * mat_b[1,1]
+    res_mat = torch.tensor([[l,m],[n,o]])
+    return res_mat
+
+matrix_B = torch.tensor([[5,6],[7,8]],dtype=torch.float32)
+res_matrix = mat_mul(matrix_A,matrix_B)
+print("Matrix Multiplication:")
+print(res_matrix)
+
+op:
+
+Matrix Multiplication:
+tensor([[19., 22.],
+        [43., 50.]])
+
+
+
+2)
+
+import torch
+
+x = torch.tensor([2.0],requires_grad=True)
+y = torch.tensor([3.0],requires_grad=True)
+
+z = x**3 + 4*x**2*y - x*y**2 + x*y +3
+z.backward()
+
+grad_x = x.grad
+grad_y = y.grad
+
+print("Tensor x:",x)
+print("Tensor y:",y)
+print("Result z:",z)
+print("Gradient of x:",grad_x)
+print("Gradient of y:",grad_y)
+
+op:
+
+Tensor x: tensor([2.], requires_grad=True)
+Tensor y: tensor([3.], requires_grad=True)
+Result z: tensor([47.], grad_fn=<AddBackward0>)
+Gradient of x: tensor([54.])
+Gradient of y: tensor([6.])
+
+3)
+
+import torch
+
+tensor1 = torch.tensor([[1,2],[3,4]])
+tensor2 = torch.tensor([[6,7],[8,9]])
+
+res_add = torch.add(tensor1,tensor2)
+
+print("Tensor Addition:")
+print(res_add)
+
+op:
+
+Tensor Addition:
+tensor([[ 7,  9],
+        [11, 13]])
+
+res_mul = torch.mul(tensor1,tensor2)
+
+print("Element-wise Multiplication:")
+print(res_mul)
+
+op:
+
+Element-wise Multiplication:
+tensor([[ 6, 14],
+        [24, 36]])
+
+res_matmul = torch.mm(tensor1,tensor2)
+
+print("Matrix Multiplication:")
+print(res_matmul)
+
+op:
+
+Matrix Multiplication:
+tensor([[22, 25],
+        [50, 57]])
+
+res_transpose = torch.transpose(tensor1,0,1)
+
+print("Transpose Operation:")
+print(res_transpose)
+
+op:
+
+Transpose Operation:
+tensor([[1, 3],
+        [2, 4]])
+
+tensor = torch.tensor([[4,9],[16,25]],dtype=torch.float32)
+
+res_sqrt = torch.sqrt(tensor)
+
+print("Element-wise Square Root:")
+print(res_sqrt)
+
+op:
+
+Element-wise Square Root:
+tensor([[2., 3.],
+        [4., 5.]])
+
+res_narrow = torch.narrow(tensor,1,1,1)
+
+print("Narrow:")
+print(res_narrow)
+
+op:
+
+Narrow:
+tensor([[ 9.],
+        [25.]])
+
+res_list = tensor1.tolist()
+
+print("List:")
+print(res_list)
+
+op:
+
+List:
+[[1, 2], [3, 4]]
+
+tensor3 =torch.tensor([[[1,2,3],[4,5,6]]])
+res_permutate = tensor3.permute(2,1,0)
+
+print("Permutate:")
+print(res_permutate)
+
+op:
+
+Permutate:
+tensor([[[1],
+         [4]],
+
+        [[2],
+         [5]],
+
+        [[3],
+         [6]]])
+
+res_sine = torch.sin(tensor)
+print("Sine:")
+print(res_sine)
+
+op:
+
+Sine:
+tensor([[-0.7568,  0.4121],
+        [-0.2879, -0.1324]])
+
+res_cosine = torch.cos(tensor)
+print("Cosine:")
+print(res_cosine)
+
+op:
+
+Cosine:
+tensor([[-0.6536, -0.9111],
+        [-0.9577,  0.9912]])
+
+res_tan = torch.tan(tensor)
+print("Tangent:")
+print(res_tan)
+
+op:
+
+Tangent:
+tensor([[ 1.1578, -0.4523],
+        [ 0.3006, -0.1335]])
+
+
+4)
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+import seaborn as sns
+
+df = pd.read_csv("insurance.csv")
+
+le = LabelEncoder()
+df['sex'] = le.fit_transform(df[['sex']])
+df['smoker'] = le.fit_transform(df[['smoker']])
+df['region'] = le.fit_transform(df[['region']])
+
+x = df.iloc[:,:-1]
+y = df.iloc[:,-1]
+
+X_train,X_test,y_train,y_test = train_test_split(x,y,test_size=0.2,random_state=42)
+X_train = torch.tensor(X_train.values).float()
+X_test = torch.tensor(X_test.values).float()
+y_train = torch.tensor(y_train.values).float()
+y_test = torch.tensor(y_test.values).float()
+
+class LinearRegressionModel(nn.Module):
+    def __init__(self,**kwargs):
+        super(LinearRegressionModel,self).__init__()
+        self.linear = nn.Linear(6,1)
+    def forward(self,x):
+        return self.linear(x)
+
+model = LinearRegressionModel()
+Criterion = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(),lr=0.01)
+
+num_epochs = 100
+train_losses = []
+
+for epoch in range(num_epochs):
+    outputs = model(X_train)
+    loss = Criterion(outputs,y_train)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    train_losses.append(loss.item())
+
+x = df.iloc[:,6]
+x = torch.tensor(x.values).float()
+y = torch.tensor(y.values).float()
+plt.figure(figsize=(10,6))
+sns.scatterplot(x=x.numpy().flatten(),y=y.numpy().flatten(),label='Data Points')
+plt.title('Exploratory Data Analytics(EDA)')
+plt.xlabel('X')
+plt.ylabel("y")
+plt.show()
+
+with torch.no_grad():
+    model.eval()
+    y_pred = model(X_test)
+    test_loss = Criterion(y_pred,y_test)
+    model.train()
+
+plt.figure(figsize=(10,6))
+plt.plot(train_losses,label='Training Loss')
+plt.axhline(y=test_loss.item(),color='r',linestyle='--',label='Testing Loss')
+plt.title('Training and Testing Loss over Epochs')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
